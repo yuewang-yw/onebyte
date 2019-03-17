@@ -13,20 +13,15 @@
 /* forward declaration */
 int onebyte_open(struct inode *inode, struct file *filep);
 int onebyte_release(struct inode *inode, struct file *filep);
-ssize_t onebyte_read(struct file *filep, char *buf, size_t
-count, loff_t *f_pos);
-ssize_t onebyte_write(struct file *filep, const char *buf,
-size_t count, loff_t *f_pos);
+ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos);
+ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos);
 static void onebyte_exit(void);
 
 /* definition of file_operation structure */
 struct file_operations onebyte_fops = {
-	read:
-	onebyte_read,
-	write:
-	onebyte_write,
-	open:
-	onebyte_open,
+	read: onebyte_read,
+	write: onebyte_write,
+	open: onebyte_open,
 	release: onebyte_release
 };
 
@@ -34,22 +29,33 @@ char *onebyte_data = NULL;
 
 int onebyte_open(struct inode *inode, struct file *filep)
 {
-return 0; // always successful
+	return 0; // always successful
 }
 
 int onebyte_release(struct inode *inode, struct file *filep)
 {
-return 0; // always successful
+	return 0; // always successful
 }
 
 ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 {
-/*please complete the function on your own*/
+
+    put_user(*onebyte_data, buf);
+	printk(KERN_ALERT "Read one byte\n");
+	return count;
+ 
 }
 
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos)
 {
-/*please complete the function on your own*/
+	*onebyte_data = buf[0];
+
+	//if (count>1)
+	//{
+   		printk(KERN_ALERT "Received %ld bytes from the user, wrote the first byte only.\n", count);
+	//}
+   	return count;
+
 }
 
 static int onebyte_init(void)
@@ -68,8 +74,7 @@ static int onebyte_init(void)
 	if (!onebyte_data) {
 		onebyte_exit();
 		// cannot allocate memory
-		// return no memory error, negative signify a
-		failure
+		// return no memory error, negative signify a failure
 		return -ENOMEM;
 	}
 	// initialize the value to be X
