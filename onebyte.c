@@ -40,20 +40,24 @@ int onebyte_release(struct inode *inode, struct file *filep)
 ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 {
 
-    put_user(*onebyte_data, buf);
-	printk(KERN_ALERT "Read one byte\n");
-	return count;
+    size_t len = 1 - *f_pos;
+	put_user(*onebyte_data, buf);
+	
+	(*f_pos) += 1;
+	//printk(KERN_ALERT "Onebyte device moule: Read one byte %c\n", *onebyte_data);	
+	return len; //read function will be called agained if zero is not returned.
  
 }
 
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos)
 {
 	*onebyte_data = buf[0];
-
-	//if (count>1)
-	//{
-   		printk(KERN_ALERT "Received %ld bytes from the user, wrote the first byte only.\n", count);
-	//}
+	printk(KERN_ALERT "Onebyte device moule: Wrote one byte %c\n", *onebyte_data);
+	
+	if (count>1)
+	{
+		return -ENOSPC;
+	}
    	return count;
 
 }
