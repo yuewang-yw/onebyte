@@ -42,10 +42,9 @@ ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 
     size_t len = 1 - *f_pos;
 	put_user(*onebyte_data, buf);
-	
 	(*f_pos) += 1;
-	//printk(KERN_ALERT "Onebyte device moule: Read one byte %c\n", *onebyte_data);	
-	return len; //read function will be called agained if zero is not returned.
+		
+	return len; //read function will be called again if zero is not returned.
  
 }
 
